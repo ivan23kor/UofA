@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+# By default, analyze loops.c
+SRC="loops.c"
+if [[ $1 != "" ]]; then
+    SRC=$1
+fi
+
+# FIX HERE
+LIB=".../LLVMMyLoopPass.so"
+
+# Clang options
+LL=${SRC%.c}.ll
+LL_NORM=${SRC%.c}_norm.ll
+PASSES="mem2reg,function(loop(indvars),loop(rotate),simplify-cfg,instcombine,loop-simplify)"
+
+clang -S -emit-llvm ${SRC}
+
+opt -passes=${PASSES} ${LL} -S -o ${LL_NORM}
+
+opt -load ${LIB} --mylooppass ${LL_NORM}

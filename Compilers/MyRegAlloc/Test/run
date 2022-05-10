@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+SRC="example.cpp"
+LL=${SRC/.cpp/.ll}
+ASM=${LL/.ll/.s}
+
+BUILD_DIR="/home/ubuntu/Compilers/MyRegAlloc/build"
+LIB="${BUILD_DIR}/MyRegAlloc.so"
+
+# Source -> LLVM IR
+clang++ -mllvm -disable-llvm-optzns -S -emit-llvm ${SRC} -o ${LL}
+
+# Build
+pushd ${BUILD_DIR} 1>/dev/null && make; popd 1>/dev/null
+
+# LLVM IR -> Assembly
+llc -load ${LIB} --regalloc=myregalloc ${LL} -o ${ASM}
+# llc --debug -load ${LIB} --regalloc=myregalloc ${LL} -o ${ASM} 2>llc_log

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+EPISODES=100000
+echo "Weighted"
+for gamma in {0.4,0.7,1.0}; do
+	echo "Gamma = ${gamma}"
+	python test.py weighted ${EPISODES} ${gamma}
+done
+
+echo "Disc"
+for gamma in {0.4,0.7,1.0}; do
+	echo "Gamma = ${gamma}"
+	python test.py disc ${EPISODES} ${gamma}
+done
